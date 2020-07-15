@@ -6,22 +6,27 @@ variable "TenantId" {
   description = "Please Provide your tenantId"
   default     = "2596de33-c183-49cc-966f-069cfce79321"
 }
+
 variable "ClientId" {
   description = "Please Provide your clientId"
   default     = "d03e4b85-3d4e-4d20-a286-5d2dc9313749"
 }
+
 variable "SecretKey" {
   description = "Please Provide your secretKey"
   default     = "4KY7T2zwf_K3M2KT.WIe-9-~-BTTKA0641"
 }
+
 variable "ServiceId" {
   description = "This parameters is referred to as the resource prefix and describes service names. Example: Platform(P) - Business(B)"
-  default     = "cv101"
+  default     = "g101"
 }
+
 variable "EnvironmentInstanceId" {
   description = "This parameters is referred to as the resource prefix and describes service names. Example: Platform(P) - Business(B)This parameters is referred to as the resource EnvironmentInstanceId which includes Env and InstanceId. Example: p01, t01"
   default     = "d01"
 }
+
 variable "InstanceId" {
   description = "This parameters is referred to as the resource prefix and describes service names. Example: Platform(P) - Business(B)This parameters is referred to as the resource EnvironmentInstanceId which includes Env and InstanceId. Example: p01, t01"
   default     = "01"
@@ -37,12 +42,25 @@ variable "Tags" {
     "CostCenter " = "12838201"
   }
 }
+
 variable "vNetworkSettings" {
+  type = object({
+    vNetRange = list(string)
+    vDNSSettings = object({
+      RequiredDNS = bool
+      vDNSServers = list(string)
+    })
+    vNetPeeringSettings = object({
+      RequiredInternetAccess = bool
+      RequiredNetworkAccess  = bool
+    })
+
+  })
   default = {
-    vNetRange = ["10.10.20.0/24"] #[You can add multiple Ranges##]#
+    vNetRange = ["10.20.30.0/24"]
     vDNSSettings = {
       RequiredDNS = false
-      vDNSServers = ["10.0.0.20", "10.10.20.30"] #[You can add multiple DNS Server for your requirments or you might disable it]#
+      vDNSServers = ["10.0.0.20", "10.10.20.30"]
     }
     vNetPeeringSettings = {
       RequiredInternetAccess = false
@@ -53,14 +71,12 @@ variable "vNetworkSettings" {
 variable "vSubnetsSettings" {
   default = {
     "Subnet01" = {
-      Name                              = "BackendSubnet01"
-      Range                             = "10.10.20.0/28"
-      RequiredInernetAccess             = true
-      RequiredNetworkAccess             = true
-      RequiredSecurityGroup             = true
-      ServiceEndpoints                  = [] #[You can add multiple Service Endpoints for spesific Subnets "Microsoft.EventHub"]#
-      EnforcePrivateLinkEdpointPolicies = false 
-      EnforcePrivateLinkServicePolicies = false
+      Name                  = "BackendSubet01"
+      Range                 = "10.10.20.0/28"
+      RequiredInernetAccess = false
+      RequiredNetworkAccess = false
+      RequiredSecurityGroup = false
+      ServiceEndpoints      = ["Microsoft.EventHub"]
       Delegation = {
         Name = "AccessDelegation01"
         ServiceDelegation = {
@@ -68,32 +84,15 @@ variable "vSubnetsSettings" {
           Actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
         }
       }
-      NSGIngress = [
-        # {"Name", "Priority", "Direction", "Action", "Protocol", "source_port_range(s)", "destination_port_range(s)", "source_address_prefix(s)", "destination_address_prefix(s)" },
-        ["DNS", "102", "Inbound", "Allow", "TCP", "53", "53", "*", "*"],
-      ]
-      NSGEgress = [
-        # {"Name", "Priority", "Direction", "Action", "Protocol", "source_port_range(s)", "destination_port_range(s)", "source_address_prefix(s)", "destination_address_prefix(s)" },
-        # ["AllowAzureLoadBalancerInBound", "4095", "OutBound", "Allow", "*", "*", "*", "AzureLoadBalancer", "*"]
-      ]
     },
     "Subnet02" = {
       Name                  = "AppSubnet01"
-      Range                 = "10.10.20.16/28"
-      RequiredInernetAccess = true
-      RequiredNetworkAccess = true
-      RequiredSecurityGroup = true
-    },
-    "Subnet03" = {
-      Name                  = "AppSubnet03"
-      Range                 = "10.10.20.32/28"
-      RequiredInernetAccess = true
-      RequiredNetworkAccess = true
-      RequiredSecurityGroup = true
+      Range                 = "10.10.20.0/28"
+      RequiredInernetAccess = false
+      RequiredNetworkAccess = false
+      RequiredSecurityGroup = false
+      Service_Endpoints     = []
+      Delegation            = {}
     }
   }
-}
-variable "DeployManagedBastion" {
-  description = "This parameters is referred to as the resource prefix and describes service names. Example: Platform(P) - Business(B)This parameters is referred to as the resource EnvironmentInstanceId which includes Env and InstanceId. Example: p01, t01"
-  default     = false
 }

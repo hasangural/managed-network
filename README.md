@@ -65,4 +65,5 @@ Reference the module to a specific version (recommended):
 
 | | |
 |-|-|
-|`NOTE` |  You can follow your own entire range of `IP Addresses`. All of this completely an example.|
+|`NOTE` |  You can follow your own entire range of `IP Addresses`. All of this completely an example.|# managed-network
+# managed-network
