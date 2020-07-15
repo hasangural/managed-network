@@ -13,23 +13,28 @@ locals {
   Merge = concat(local.Rules.NSGIngress)
 }
 
-
-
 ####> Creating Resource Group for Core Infrastructure <####
+
 resource "azurerm_resource_group" "coreInfra" {
+
   name     = "${var.ServiceId}-${var.EnvironmentInstanceId}-core-${var.InstanceId}"
   location = var.Region
 }
 
 ####> Creating Virutal Network for Core Infrastructure <####
+
 resource azurerm_virtual_network "coreInfra" {
+
   name                = "${var.ServiceId}-${var.EnvironmentInstanceId}-core-vn-${var.InstanceId}"
   resource_group_name = azurerm_resource_group.coreInfra.name
   location            = var.Region
+
   address_space       = var.vNetworkSettings.vNetRange
   dns_servers         = var.vNetworkSettings.vDNSSettings.RequiredDNS == true ? var.vNetworkSettings.vDNSSettings.vDNSServers : []
 }
+
 ####> Creating Virutal Network Subnets for Core Infrastructure <####
+
 resource "azurerm_subnet" "coreInfra" {
   for_each = var.vSubnetsSettings
 
@@ -54,7 +59,9 @@ resource "azurerm_subnet" "coreInfra" {
     }
   }
 }
+
 ####> Creating NSGs for Subnets for Core Infrastructure <####
+
 resource "azurerm_network_security_group" "this" {
 
   for_each = { for name, v in var.vSubnetsSettings : name => v if v.RequiredSecurityGroup == true }
@@ -81,7 +88,9 @@ resource "azurerm_network_security_group" "this" {
     }
   }
 }
+
 ####> Creating NSGs for Subnets for Core Infrastructure <####
+
 resource "azurerm_route_table" "this" {
   for_each = { for name, v in var.vSubnetsSettings : name => v.Name if v.RequiredInernetAccess == true && v.RequiredNetworkAccess == true }
 
