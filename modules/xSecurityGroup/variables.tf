@@ -1,22 +1,3 @@
-variable "SubscriptionId" {
-  description = "Please Provide your subscriptionId"
-  default     = ""
-}
-variable "TenantId" {
-  description = "Please Provide your tenantId"
-  default     = ""
-}
-
-variable "ClientId" {
-  description = "Please Provide your clientId"
-  default     = ""
-}
-
-variable "SecretKey" {
-  description = "Please Provide your secretKey"
-  default     = ""
-}
-
 variable "ServiceId" {
   description = "This parameters is referred to as the resource prefix and describes service names. Example: Platform(P) - Business(B)"
   default     = ""
@@ -54,12 +35,12 @@ variable "vNetworkSettings" {
       RequiredInternetAccess = bool
       RequiredNetworkAccess  = bool
     })
-
+    RequiredBastionHost = bool
   })
 }
 variable "vSubnetsSettings" {
   default = ""
 }
-variable "DeployManagedBastion" {
+variable "DependsOn" {
   default = ""
 }

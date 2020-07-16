@@ -14,7 +14,7 @@ provider "azurerm" {
 }
 
 module "xNetwork" {
-  source = "./modules/xNetwork/0.0.1"
+  source = "./modules/xNetwork"
   #version = "0.0.1"
   ServiceId             = var.ServiceId
   EnvironmentInstanceId = var.EnvironmentInstanceId
@@ -23,11 +23,10 @@ module "xNetwork" {
   Region               = var.Region
   vNetworkSettings     = var.vNetworkSettings
   vSubnetsSettings     = var.vSubnetsSettings
-  DeployManagedBastion = var.DeployManagedBastion
 }
 
 module "xRouteTable" {
-  source = "./modules/xRouteTable/0.0.1"
+  source = "./modules/xRouteTable"
   #version = "0.0.1"
   ServiceId             = var.ServiceId
   EnvironmentInstanceId = var.EnvironmentInstanceId
@@ -36,10 +35,12 @@ module "xRouteTable" {
   Region               = var.Region
   vNetworkSettings     = var.vNetworkSettings
   vSubnetsSettings     = var.vSubnetsSettings
+  
+  DependsOn           = module.xNetwork.Subnets
 }
 
 module "xSecurityGroup" {
-  source = "./modules/xSecurityGroup/0.0.1"
+  source = "./modules/xSecurityGroup"
   #version = "0.0.1"
   ServiceId             = var.ServiceId
   EnvironmentInstanceId = var.EnvironmentInstanceId
@@ -48,7 +49,20 @@ module "xSecurityGroup" {
   Region               = var.Region
   vNetworkSettings     = var.vNetworkSettings
   vSubnetsSettings     = var.vSubnetsSettings
-  DeployManagedBastion = var.DeployManagedBastion
+  
+  DependsOn           = module.xNetwork.Subnets
+}
+
+module "xBastion" {
+  source = "./modules/xBastion"
+  #version = "0.0.1"
+  ServiceId             = var.ServiceId
+  EnvironmentInstanceId = var.EnvironmentInstanceId
+  InstanceId            = var.InstanceId
+
+  Region               = var.Region
+  vNetworkSettings     = var.vNetworkSettings
+  vSubnetsSettings     = module.xNetwork.Subnets
 }
 
 resource "azurerm_subnet_network_security_group_association" "NSG_Association" {

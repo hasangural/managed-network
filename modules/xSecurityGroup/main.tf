@@ -57,6 +57,7 @@ resource "azurerm_network_security_group" "coreInfra" {
   name                = "${var.ServiceId}-${var.EnvironmentInstanceId}-core-nsg-${lower(each.value.Name)}"
   resource_group_name = "${var.ServiceId}-${var.EnvironmentInstanceId}-core-${var.InstanceId}"
   location            = var.Region
+  depends_on          = [var.DependsOn]
 
   dynamic "security_rule" {
 

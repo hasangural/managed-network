@@ -7,6 +7,10 @@ output "NSGs" {
   value       = module.xSecurityGroup.NSGs
   description = "Returns the complete set of NSG objects created in the virtual network"
 }
+output "BastionSubnet" {
+  value       = module.xNetwork.BastionSubnet
+  description = "Returns the complete set of NSG objects created in the virtual network"
+}
 
 
 

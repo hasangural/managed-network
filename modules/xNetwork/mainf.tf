@@ -1,9 +1,8 @@
 locals {
-
   ManagedBastion = {
-    "Subnet99" = {
+    "BastionSubnet" = {
       Name                              = "AzureBastionSubnet"
-      Range                             = cidrsubnet("10.10.20.0/24", 4, 15)
+      Range                             = cidrsubnet("${var.vNetworkSettings.vNetRange[0]}", 4, 15)
       RequiredInernetAccess             = false
       RequiredNetworkAccess             = false
       RequiredSecurityGroup             = true
@@ -19,7 +18,6 @@ locals {
       ]
     }
   }
-
 }
 
 ####> Creating Resource Group for Core Infrastructure <####
@@ -42,13 +40,13 @@ resource azurerm_virtual_network "coreInfra" {
 ####> Creating Virutal Subnets for Core Infrastructure <####
 
 resource "azurerm_subnet" "coreInfra" {
-  for_each = merge(var.vSubnetsSettings, var.DeployManagedBastion == true ? local.ManagedBastion : {}) 
+  for_each = merge(var.vSubnetsSettings, var.vNetworkSettings.RequiredBastionHost == true ? local.ManagedBastion : {})
 
-  name                 = each.value.Name
-  resource_group_name  = azurerm_resource_group.coreInfra.name
-  virtual_network_name = azurerm_virtual_network.coreInfra.name
-  address_prefix       = each.value.Range
-  service_endpoints    = lookup(each.value, "ServiceEndpoints", [])
+  name                                           = each.value.Name
+  resource_group_name                            = azurerm_resource_group.coreInfra.name
+  virtual_network_name                           = azurerm_virtual_network.coreInfra.name
+  address_prefix                                 = each.value.Range
+  service_endpoints                              = lookup(each.value, "ServiceEndpoints", [])
   enforce_private_link_endpoint_network_policies = lookup(each.value, "EnforcePrivateLinkEdpointPolicies", null)
   enforce_private_link_service_network_policies  = lookup(each.value, "EnforcePrivateLinkServicePolicies", null)
 
